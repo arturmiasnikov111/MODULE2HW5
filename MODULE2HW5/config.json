@@ -1,0 +1,6 @@
+{
+  "Path" : "/Users/arturmiasnykov/logtest/",
+  "FileTimeFormat" : "hh.mm.ss dd.MM.yyyy",
+  "FileFormat": ".txt",
+  "FileLimitInFolder": 2
+}
