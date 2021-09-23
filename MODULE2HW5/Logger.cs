@@ -1,21 +1,25 @@
 using System;
+using System.Threading;
 using System.Text;
-using System.IO;
 using MODULE2HW5.Enums;
+using MODULE2HW5.Services;
 
 namespace MODULE2HW5
 {
     public sealed class Logger
     {
         private static readonly Logger _instance = new Logger();
+        private FileService _fileService;
         private Logger()
         {
             Stringbuilder = new StringBuilder();
+            _fileService = new FileService();
         }
 
         public static Logger Instance => _instance;
 
         public StringBuilder Stringbuilder { get; }
+        public string StringToWrite { get; set; }
 
         public void Info(string textToWrite)
         {
@@ -42,10 +46,11 @@ namespace MODULE2HW5
             Stringbuilder.Clear();
         }
 
-        private StringBuilder WriteText(LogType logType, string textToWrite)
+        private void WriteText(LogType logType, string textToWrite)
         {
-            Stringbuilder.Append($"{DateTime.Now} : [{logType}] : {textToWrite} {Environment.NewLine}");
-            return Stringbuilder;
+            StringToWrite = $"{DateTime.Now} : [{logType}] : {textToWrite} {Environment.NewLine}";
+            Stringbuilder.Append(StringToWrite);
+            _fileService.SaveToFile();
         }
     }
 }

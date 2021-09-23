@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.IO;
+using System.Text;
 using MODULE2HW5.Services.Abstractions;
 
 namespace MODULE2HW5.Services
@@ -11,7 +12,12 @@ namespace MODULE2HW5.Services
         public FileService()
         {
             _configService = new ConfigService();
+            FinalFormat = $"{_configService.Config.Path}" +
+                          $"{DateTime.UtcNow.ToString(_configService.Config.FileTimeFormat)}" +
+                          $"{_configService.Config.FileFormat}";
         }
+
+        private string FinalFormat { get; init; }
 
         public FileInfo[] GetFiles()
         {
@@ -19,26 +25,24 @@ namespace MODULE2HW5.Services
             return files.ToArray();
         }
 
-        public string CreateFile()
+        public void CreateFile()
         {
-            string finalFormat = $"{_configService.Config.Path}" +
-                                 $"{DateTime.UtcNow.ToString(_configService.Config.FileTimeFormat)}" +
-                                 $"{_configService.Config.FileFormat}";
-            Console.WriteLine(finalFormat);
             if (CheckDirectory())
             {
-               File.Create(finalFormat).Close();
-               return finalFormat;
+                if (!File.Exists(FinalFormat))
+                {
+                    File.Create(FinalFormat).Close();
+                }
             }
-
-            return finalFormat;
         }
 
         public void SaveToFile()
         {
-            string pathFile = CreateFile();
             var logger = Logger.Instance;
-            File.WriteAllText(pathFile, logger.Stringbuilder.ToString());
+            using (StreamWriter sw = new StreamWriter(FinalFormat, true))
+            {
+                sw.WriteLine(logger.StringToWrite);
+            }
         }
 
         public void DeleteFiles()
@@ -63,7 +67,7 @@ namespace MODULE2HW5.Services
             if (amountOfFiles > _configService.Config.FileLimitInFolder)
             {
                 DeleteFiles();
-                return false;
+                return true;
             }
 
             return true;

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using MODULE2HW5.Services;
 
 namespace MODULE2HW5
@@ -11,6 +12,7 @@ namespace MODULE2HW5
             var action = new Actions();
             var random = new Random();
             var logger = Logger.Instance;
+            fileService.DeleteFiles();
             for (int i = 0; i < 100; i++)
             {
                 int temp = random.Next(1, 4);
@@ -43,8 +45,6 @@ namespace MODULE2HW5
                         break;
                 }
             }
-
-            fileService.SaveToFile();
         }
     }
 }
